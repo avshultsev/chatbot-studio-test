@@ -1,6 +1,6 @@
 import { RequestOptions } from 'http';
 import { Methods } from './enums';
-
+import { ParsedQs } from 'qs';
 
 export interface IOptions extends RequestOptions {
   protocol: string,
@@ -20,10 +20,18 @@ export interface IPostRequestBody {
 }
 
 export interface ICollectionItem {
-  id: string,
+  [id: string]: string,
   ext: string,
-  width: number,
-  height: number,
-  bytesSize: number,
+  width: string,
+  height: string,
+  bytesSize: string,
   data: string
+}
+
+export interface IQueryParams extends ParsedQs {
+  id?: string,
+  ext?: string,
+  width?: string,
+  height?: string,
+  bytesSize?: string,
 }
