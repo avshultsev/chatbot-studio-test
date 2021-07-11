@@ -1,6 +1,7 @@
 import { RequestOptions } from 'http';
 import { Methods } from './enums';
 import { ParsedQs } from 'qs';
+import sharp from 'sharp';
 
 export interface IOptions extends RequestOptions {
   protocol: string,
@@ -34,4 +35,9 @@ export interface IQueryParams extends ParsedQs {
   width?: string,
   height?: string,
   bytesSize?: string,
+}
+
+export interface ISharpBufferObj {
+  data: Buffer;
+  info: sharp.OutputInfo;
 }

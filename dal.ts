@@ -3,9 +3,10 @@ import path from 'path';
 import sharp from 'sharp';
 import { ParsedQs } from 'qs';
 import { createRandomString } from './lib';
-import { ICollectionItem } from './tsAbstractions/interfaces';
+import { ICollectionItem, ISharpBufferObj } from './tsAbstractions/interfaces';
 
-export const save = async (data: Buffer, info: sharp.OutputInfo): Promise<void> => {
+export const save = async (sharpBufferObj: ISharpBufferObj): Promise<void> => {
+  const { data, info } = sharpBufferObj;
   const collectionPath = path.join(process.cwd(), '..', 'sampleDB', 'collection.json');
   return fs.readFile(collectionPath, { encoding: 'utf-8' })
     .then((jsonCollection) => {
