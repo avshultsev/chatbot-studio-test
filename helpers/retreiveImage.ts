@@ -1,7 +1,6 @@
-import { createOptions, promiseRequest, retreiveData, isSupportedExtension } from '../lib';
+import { createOptions, promiseRequest, retreiveData, isSupportedExtension, retreiveBuffer } from '../lib';
 import { ISourceResponse } from '../tsAbstractions/interfaces';
 import { Methods } from '../tsAbstractions/enums';
-import { IncomingMessage } from 'http';
 
 export const retreiveImageUrl = async (): Promise<ISourceResponse> => {
   const options = createOptions('random.dog', '/woof.json', Methods.GET);
@@ -24,7 +23,7 @@ export const retreiveImageUrl = async (): Promise<ISourceResponse> => {
   return sourceResponse;
 };
 
-export const retreiveImageData = async (path: string): Promise<IncomingMessage> => {
+export const retreiveImageData = async (path: string): Promise<Buffer> => {
   const options = createOptions('random.dog', path, Methods.GET);
-  return promiseRequest(options);
+  return promiseRequest(options).then(retreiveBuffer);
 };

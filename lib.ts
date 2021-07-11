@@ -21,13 +21,21 @@ export const createOptions = (url: string, path = '/', method: Methods): IOption
   path
 });
 
+export const retreiveBuffer = async (
+  asyncIterable: AsyncIterable<Uint8Array>, 
+): Promise<Buffer> => {
+  const chunks: Uint8Array[] = [];
+  for await (const chunk of asyncIterable) chunks.push(chunk);
+  const buffer = Buffer.concat(chunks);
+  return buffer;
+};
+
 export const retreiveData = async (
   asyncIterable: AsyncIterable<Uint8Array>, 
   enc: BufferEncoding = 'utf-8'
 ): Promise<string> => {
-  const chunks: Uint8Array[] = [];
-  for await (const chunk of asyncIterable) chunks.push(chunk);
-  const data = Buffer.concat(chunks).toString(enc);
+  const buffer = await retreiveBuffer(asyncIterable);
+  const data = buffer.toString(enc);
   return data;
 };
 
@@ -35,4 +43,17 @@ export const isSupportedExtension = (pathname: string): boolean => {
   const dotIdx = pathname.indexOf('.');
   const ext = pathname.substring(dotIdx + 1).toLowerCase();
   return ext in SupportedExtensions;
+};
+
+export const createRandomString = (length = 15): string => {
+  const lowerCase = 'abcdefghijklmnopqrstuvwxyz';
+  const upperCase = lowerCase.toUpperCase();
+  const digits = '0123456789';
+  const CHARS = upperCase + lowerCase + digits;
+  let str = '';
+  while (str.length < length) {
+    const index = Math.floor(Math.random() * CHARS.length);
+    str += CHARS[index];
+  }
+  return str;
 };
