@@ -1,38 +1,45 @@
+import { QueryResult } from 'pg';
 import fs from 'fs/promises';
 import path from 'path';
-import sharp from 'sharp';
-import { ParsedQs } from 'qs';
+import pool from './db';
 import { createRandomString } from './lib';
-import { ICollectionItem, ISharpBufferObj } from './tsAbstractions/interfaces';
+import { IQueryParams, ISharpBufferObj } from './tsAbstractions/interfaces';
 
 export const save = async (sharpBufferObj: ISharpBufferObj): Promise<void> => {
   const { data, info } = sharpBufferObj;
-  const collectionPath = path.join(process.cwd(), '..', 'sampleDB', 'collection.json');
-  return fs.readFile(collectionPath, { encoding: 'utf-8' })
-    .then((jsonCollection) => {
-      const collection: ICollectionItem[] = JSON.parse(jsonCollection);
-      const collectionItem: ICollectionItem = {
-        id: createRandomString(),
-        ext: info.format,
-        width: info.width.toString(),
-        height: info.height.toString(),
-        bytesSize: info.size.toString(),
-        data: data.toString('base64'),
-      };
-      collection.push(collectionItem);
-
-      return fs.writeFile(collectionPath, JSON.stringify(collection), { encoding: 'utf-8' });
+  const id = createRandomString();
+  const row = { 
+    id, 
+    format:   info.format,
+    width:    info.width,
+    height:   info.height,
+    channels: info.channels,
+    premultiplied: info.premultiplied,
+    size:     info.size,
+  };
+  const values = Object.values(row).map(item => typeof item === 'string' ? `'${item}'` : item).join(', ');
+  const sql = `INSERT INTO Images VALUES (${values});`;
+  pool
+    .query(sql)
+    .then(res => {
+      console.table(res.fields);
+      console.table(res.rows);
+      return pool.end();
+    })
+    .catch(err => {
+      throw err;
+    })
+    .then(() => {
+      const filePath = path.join(process.cwd(), '..', 'static', 'images', `${id}.${info.format}`);
+      return fs.writeFile(filePath, data, { encoding: 'base64' });
+    })
+    .catch(err => {
+      console.log('Error writing static file!\n', err);
     });
 };
 
-export const find = async (query: ParsedQs): Promise<ICollectionItem[]> => {
-  const collectionPath = path.join(process.cwd(), '..', 'sampleDB', 'collection.json');
-  return fs.readFile(collectionPath, { encoding: 'utf-8' })
-    .then((jsonCollection) => {
-      const collection: ICollectionItem[] = JSON.parse(jsonCollection);
-      const matchingItems = collection.filter(item => {
-        return Object.entries(query).every(([key, value]) => item[key] === value);
-      });
-      return matchingItems;
-    });
+export const find = (query: IQueryParams): Promise<QueryResult<any>> => {
+  const conditions = Object.entries(query).map(([key, value]) => `${key}=${value}`);
+  const sql = `SELECT * FROM Images WHERE ${conditions.join(' AND ')};`;
+  return pool.query(sql).catch(err => { throw err; });
 };

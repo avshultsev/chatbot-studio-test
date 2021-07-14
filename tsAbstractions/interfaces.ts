@@ -1,6 +1,5 @@
 import { RequestOptions } from 'http';
 import { Methods } from './enums';
-import { ParsedQs } from 'qs';
 import sharp from 'sharp';
 
 export interface IOptions extends RequestOptions {
@@ -20,21 +19,12 @@ export interface IPostRequestBody {
   height: number
 }
 
-export interface ICollectionItem {
-  [id: string]: string,
-  ext: string,
-  width: string,
-  height: string,
-  bytesSize: string,
-  data: string
-}
-
-export interface IQueryParams extends ParsedQs {
+export interface IQueryParams {
   id?: string,
   ext?: string,
-  width?: string,
-  height?: string,
-  bytesSize?: string,
+  width?: number,
+  height?: number,
+  bytesSize?: number,
 }
 
 export interface ISharpBufferObj {
