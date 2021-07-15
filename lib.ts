@@ -38,7 +38,7 @@ export const isSupportedExtension = (pathname: string): boolean => {
   return ext in SupportedExtensions;
 };
 
-export const createRandomString = (length = 15): string => {
+export const createRandomString = (length = 10): string => {
   const lowerCase = 'abcdefghijklmnopqrstuvwxyz';
   const upperCase = lowerCase.toUpperCase();
   const digits = '0123456789';
@@ -50,3 +50,6 @@ export const createRandomString = (length = 15): string => {
   }
   return str;
 };
+
+export const wrapWithTicks = (str: string | any): string => `'${str}'`;
+export const isString = (value: unknown): boolean => typeof value === 'string';
