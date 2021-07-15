@@ -1,9 +1,11 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import { getHandler } from './handlers/get';
 import { postHandler } from './handlers/post';
 import { getImage } from './handlers/getImage';
 const app = express();
-const PORT = 8080;
+dotenv.config();
+const PORT = process.env.PORT || 8080;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ strict: true }));
 app.get('/list/dog/images', getHandler);
